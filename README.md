@@ -36,5 +36,12 @@
 
 可以自己去百度云申请一个 access key，启动时通过指定 
 baidu.appid、baidu.appkey 和 baidu.secretkey 来代替默认账号。
-这样就又多了500次免费机会了，而且可以氪金得到更多次。
+这样就又多了500次免费机会了，而且可以向百度氪金得到更多机会。
+
+```
+java -jar -Dbaidu.appid={appid} \
+ -Dbaidu.appkey={apkey} \
+ -Dbaidu.secretkey={secretkey} \
+ ./ocr-0.0.1-SNAPSHOT.jar
+```
 

@@ -4,9 +4,9 @@ import com.baidu.aip.ocr.AipOcr;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -21,45 +21,42 @@ import static org.slf4j.LoggerFactory.getLogger;
  * 调用 baidu 文字识别服务
  */
 @Component
-public class FastOcr {
+public class BaiduOcr {
 
-    private static final Logger logger = getLogger(FastOcr.class);
-
-    //设置APPID/AK/SK
-    @Value("${baidu.appid}")
-    String APP_ID;
-    @Value("${baidu.appkey}")
-    String API_KEY;
-    @Value("${baidu.secretkey}")
-    String SECRET_KEY;
+    private static final Logger logger = getLogger(BaiduOcr.class);
 
     @Autowired
     ClipBoardOperator clipBoardOperator;
 
+    @Autowired
+    AipOcr client;
+
+    @PostConstruct
+    public void init() {
+    }
+
     public JSONObject loadImage(String tmpLocation) throws Exception {
 
-        // 初始化一个AipOcr
-        AipOcr client = new AipOcr(APP_ID, API_KEY, SECRET_KEY);
 
         // 可选：设置网络连接参数
         client.setConnectionTimeoutInMillis(2000);
         client.setSocketTimeoutInMillis(60000);
 
-        // 调用接口
-//        String path = "/Users/houdg/tmp/tmp.log";
-//        byte[] file = readImageFile(path);
-//        JSONObject response2 = client.basicGeneral(file, new HashMap<String, String>());
-//        System.out.println(response2.toString());
+        BufferedImage image1 = getBufferedImageFromClipboard(tmpLocation);
+
+        JSONObject res = client.basicAccurateGeneral(getBytes(image1), new HashMap<>());
+        logger.info(res.toString(2));
+        return res;
+    }
+
+    public BufferedImage getBufferedImageFromClipboard(String tmpLocation) throws Exception {
 
         Image image = clipBoardOperator.loadImageFromClipboard();
         BufferedImage image1 = clipBoardOperator.getBufferedImage(image);
 
         File outputfile = new File(tmpLocation != null ? tmpLocation : "ocr_tmp.jpg");
         ImageIO.write(clipBoardOperator.getBufferedImage(image1), "jpg", outputfile);
-
-        JSONObject res = client.basicGeneral(getBytes(image1), new HashMap<>());
-        logger.info(res.toString(2));
-        return res;
+        return image1;
     }
 
 

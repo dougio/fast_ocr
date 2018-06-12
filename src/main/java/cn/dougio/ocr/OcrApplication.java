@@ -1,6 +1,7 @@
 package cn.dougio.ocr;
 
 import com.baidu.aip.ocr.AipOcr;
+import com.baidu.aip.speech.AipSpeech;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,16 @@ public class OcrApplication {
         return new AipOcr(APP_ID, API_KEY, SECRET_KEY);
     }
 
+    @Bean
+    AipSpeech aipSpeech() {
+        AipSpeech client = new AipSpeech(APP_ID, API_KEY, SECRET_KEY);
+
+        client.setConnectionTimeoutInMillis(2000);
+        client.setSocketTimeoutInMillis(60000);
+
+        return client;
+    }
+
     /**
      *
      * @param args
@@ -53,7 +64,13 @@ public class OcrApplication {
         Iterator<Object> iterator = array.iterator();
 
         StringBuffer sb = extractWordResults(iterator);
+
+        // 文本写入剪贴板
         clipBoardOperator.writeTextToClipboard(sb.toString());
+
+        // 音频写入文件
+        BaiduReader baiduReader = (BaiduReader) app.getBean("baiduReader");
+        baiduReader.readText(sb.toString());
     }
 
     /**

@@ -56,6 +56,7 @@ public class ClipBoardOperator {
     }
 
     /**
+     * 把一串文字写入剪贴板，方便粘贴和从剪贴板中处理
      *
      * @param s
      */

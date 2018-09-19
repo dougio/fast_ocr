@@ -40,7 +40,7 @@ public class BaiduReader {
             }
         }
         if (res1 != null) {
-            System.out.println(res1.toString(2));
+            logger.info(res1.toString(2));
         }
         com.sun.javafx.application.PlatformImpl.startup(()->{});
         Media hit = new Media(new File(bip).toURI().toString());

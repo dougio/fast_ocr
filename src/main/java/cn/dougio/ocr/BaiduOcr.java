@@ -35,6 +35,12 @@ public class BaiduOcr {
     public void init() {
     }
 
+    /**
+     *
+     * @param tmpLocation
+     * @return
+     * @throws Exception
+     */
     public JSONObject loadImage(String tmpLocation) throws Exception {
 
 
@@ -49,6 +55,12 @@ public class BaiduOcr {
         return res;
     }
 
+    /**
+     *
+     * @param tmpLocation
+     * @return
+     * @throws Exception
+     */
     public BufferedImage getBufferedImageFromClipboard(String tmpLocation) throws Exception {
 
         Image image = clipBoardOperator.loadImageFromClipboard();
@@ -68,6 +80,12 @@ public class BaiduOcr {
         return getBytes(bufferedImage);
     }
 
+    /**
+     *
+     * @param bufferedImage
+     * @return
+     * @throws IOException
+     */
     private byte[] getBytes(BufferedImage bufferedImage) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, "jpg", baos);

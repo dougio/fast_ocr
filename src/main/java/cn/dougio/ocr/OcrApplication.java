@@ -4,8 +4,10 @@ import com.baidu.aip.ocr.AipOcr;
 import com.baidu.aip.speech.AipSpeech;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.Banner;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -17,7 +19,7 @@ import java.util.Iterator;
  *
  */
 @SpringBootApplication
-public class OcrApplication {
+public class OcrApplication implements CommandLineRunner {
 
     //设置APPID/AK/SK
     @Value("${baidu.appid}")
@@ -42,6 +44,12 @@ public class OcrApplication {
         return client;
     }
 
+    @Autowired
+    BaiduOcr baiduOcr;
+
+    @Autowired
+    BaiduReader baiduReader;
+
     /**
      *
      * @param args
@@ -55,7 +63,11 @@ public class OcrApplication {
 
         app.getEnvironment().getSystemProperties().put("endpoints.jmx.enabled", false);
 
-        BaiduOcr baiduOcr = (BaiduOcr) app.getBean("baiduOcr");
+    }
+
+    @Override
+    public void run(String... strings) throws Exception {
+
         JSONObject obj = baiduOcr.loadImage("ocr_tmp.jpg");
 
         ClipBoardOperator clipBoardOperator = new ClipBoardOperator();
@@ -69,7 +81,6 @@ public class OcrApplication {
         clipBoardOperator.writeTextToClipboard(sb.toString());
 
         // 音频写入文件
-        BaiduReader baiduReader = (BaiduReader) app.getBean("baiduReader");
         baiduReader.readText(sb.toString());
     }
 

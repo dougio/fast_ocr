@@ -45,6 +45,7 @@ public class BaiduReader {
         com.sun.javafx.application.PlatformImpl.startup(()->{});
         Media hit = new Media(new File(bip).toURI().toString());
         MediaPlayer mediaPlayer = new MediaPlayer(hit);
+        mediaPlayer.setOnEndOfMedia(() -> mediaPlayer.stop());
         mediaPlayer.play();
     }
 }

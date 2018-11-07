@@ -1,9 +1,14 @@
 package cn.dougio.ocr;
 
 import com.baidu.aip.ocr.AipOcr;
+import com.baidu.aip.speech.AipSpeech;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -12,11 +17,15 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.Iterator;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 /**
  *
  */
 @SpringBootApplication
-public class OcrApplication {
+public class OcrApplication implements ApplicationRunner {
+
+    private static final Logger logger = getLogger(OcrApplication.class);
 
     //设置APPID/AK/SK
     @Value("${baidu.appid}")
@@ -31,12 +40,28 @@ public class OcrApplication {
         return new AipOcr(APP_ID, API_KEY, SECRET_KEY);
     }
 
+    @Bean
+    AipSpeech aipSpeech() {
+        AipSpeech client = new AipSpeech(APP_ID, API_KEY, SECRET_KEY);
+
+        client.setConnectionTimeoutInMillis(2000);
+        client.setSocketTimeoutInMillis(60000);
+
+        return client;
+    }
+
+    @Autowired
+    BaiduOcr baiduOcr;
+
+    @Autowired
+    BaiduReader baiduReader;
+
     /**
      *
      * @param args
      * @throws Exception
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         ConfigurableApplicationContext app = new SpringApplicationBuilder(OcrApplication.class)
                 .bannerMode(Banner.Mode.OFF)
@@ -44,8 +69,25 @@ public class OcrApplication {
 
         app.getEnvironment().getSystemProperties().put("endpoints.jmx.enabled", false);
 
-        BaiduOcr baiduOcr = (BaiduOcr) app.getBean("baiduOcr");
-        JSONObject obj = baiduOcr.loadImage("ocr_tmp.jpg");
+    }
+
+    @Override
+    public void run(ApplicationArguments args) {
+
+        logger.info("args.getOptionNames:\t{}", args.getOptionNames());
+
+        if (args.containsOption("help")) {
+            printHelp();
+            return;
+        }
+
+        JSONObject obj;
+        try {
+            obj = baiduOcr.loadImage("ocr_tmp.jpg");
+        } catch (Exception e) {
+            logger.error("Cannot load image to text for: {}", e.getLocalizedMessage());
+            return;
+        }
 
         ClipBoardOperator clipBoardOperator = new ClipBoardOperator();
 
@@ -53,7 +95,24 @@ public class OcrApplication {
         Iterator<Object> iterator = array.iterator();
 
         StringBuffer sb = extractWordResults(iterator);
-        clipBoardOperator.writeTextToClipboard(sb.toString());
+
+        if (!args.containsOption("keepimg")) {
+            // 文本写入剪贴板
+            clipBoardOperator.writeTextToClipboard(sb.toString());
+        }
+
+        if (args.containsOption("read")) {
+            logger.info("read the text in image");
+            // 音频写入文件
+            baiduReader.readText(sb.toString());
+        }
+    }
+
+    public void printHelp() {
+        StringBuffer sb = new StringBuffer("usage: java -jar ocr.jar [--help][--read]");
+        sb.append("       ln [-Ffhinsv] source_file ... target_dir");
+        sb.append("       link source_file target_file");
+        System.out.println(sb);
     }
 
     /**

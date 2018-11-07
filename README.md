@@ -42,6 +42,6 @@ baidu.appid、baidu.appkey 和 baidu.secretkey 来代替默认账号。
 java -jar -Dbaidu.appid={appid} \
  -Dbaidu.appkey={apkey} \
  -Dbaidu.secretkey={secretkey} \
- ./ocr-0.0.1-SNAPSHOT.jar
+ ./ocr-*****.jar
 ```
 

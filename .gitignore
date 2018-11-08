@@ -1,5 +1,4 @@
 target/
-!.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
 .apt_generated
@@ -22,4 +21,6 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-/src/main/resources/application.properties
+tmp
+application.yml
+src/main/resources/application.yml

@@ -15,6 +15,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import java.io.File;
 import java.util.Iterator;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -26,6 +27,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class OcrApplication implements ApplicationRunner {
 
     private static final Logger logger = getLogger(OcrApplication.class);
+
+    public static final String OCR_TMP_JPG_PATH = "tmp/ocr_tmp.jpg";
+    public static final String TMP_FOLDER = "tmp";
 
     //设置APPID/AK/SK
     @Value("${baidu.appid}")
@@ -76,6 +80,8 @@ public class OcrApplication implements ApplicationRunner {
 
         logger.info("args.getOptionNames:\t{}", args.getOptionNames());
 
+        mkTmpDir();
+
         if (args.containsOption("help")) {
             printHelp();
             return;
@@ -83,7 +89,7 @@ public class OcrApplication implements ApplicationRunner {
 
         JSONObject obj;
         try {
-            obj = baiduOcr.loadImage("ocr_tmp.jpg");
+            obj = baiduOcr.loadImage(OCR_TMP_JPG_PATH);
         } catch (Exception e) {
             logger.error("Cannot load image to text for: {}", e.getLocalizedMessage());
             return;
@@ -108,6 +114,19 @@ public class OcrApplication implements ApplicationRunner {
         }
     }
 
+    /**
+     * prepare temp folder to restore image
+     */
+    private void mkTmpDir() {
+        File directory = new File(TMP_FOLDER);
+        if (! directory.exists()){
+            directory.mkdir();
+        }
+    }
+
+    /**
+     * help text
+     */
     public void printHelp() {
         StringBuffer sb = new StringBuffer("usage: java -jar ocr.jar [--help][--read]");
         sb.append("       ln [-Ffhinsv] source_file ... target_dir");

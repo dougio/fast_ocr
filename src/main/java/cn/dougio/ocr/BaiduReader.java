@@ -25,16 +25,16 @@ public class BaiduReader {
     @Autowired
     AipSpeech aipSpeech;
 
-    public void readText(String text) {
+    static final String READ_TMP_MP3_PATH = "tmp/output.mp3";
 
-        String bip = "output.mp3";
+    public void readText(String text) {
 
         TtsResponse res = aipSpeech.synthesis(text, "zh", 1, null);
         byte[] data = res.getData();
         JSONObject res1 = res.getResult();
         if (data != null) {
             try {
-                Util.writeBytesToFileSystem(data, bip);
+                Util.writeBytesToFileSystem(data, READ_TMP_MP3_PATH);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -43,7 +43,7 @@ public class BaiduReader {
             logger.info(res1.toString(2));
         }
         com.sun.javafx.application.PlatformImpl.startup(()->{});
-        Media hit = new Media(new File(bip).toURI().toString());
+        Media hit = new Media(new File(READ_TMP_MP3_PATH).toURI().toString());
         MediaPlayer mediaPlayer = new MediaPlayer(hit);
         mediaPlayer.setOnEndOfMedia(() -> mediaPlayer.stop());
         mediaPlayer.play();

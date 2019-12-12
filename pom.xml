@@ -5,11 +5,11 @@
 
 	<groupId>cn.dougio</groupId>
 	<artifactId>ocr</artifactId>
-	<version>0.2.0</version>
+	<version>0.3.0</version>
 	<packaging>jar</packaging>
 
 	<name>ocr</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Fast ocr with UI support</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -29,6 +29,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-media</artifactId>
+			<version>11</version>
+		</dependency>
+		<!-- Thanks for using https://jar-download.com -->
 
 		<dependency>
 			<groupId>com.baidu.aip</groupId>

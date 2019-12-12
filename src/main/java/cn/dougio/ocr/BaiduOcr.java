@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -31,18 +30,13 @@ public class BaiduOcr {
     @Autowired
     AipOcr client;
 
-    @PostConstruct
-    public void init() {
-    }
-
     /**
      *
-     * @param tmpLocation
-     * @return
-     * @throws Exception
+     * @param tmpLocation 临时文件的路径，用于暂存图片
+     * @return 解析结果
+     * @throws Exception 读取文件可能出现异常；图像识别网络操作可能出现异常
      */
     public JSONObject loadImage(String tmpLocation) throws Exception {
-
 
         // 可选：设置网络连接参数
         client.setConnectionTimeoutInMillis(2000);
@@ -57,9 +51,9 @@ public class BaiduOcr {
 
     /**
      *
-     * @param tmpLocation
-     * @return
-     * @throws Exception
+     * @param tmpLocation 临时保存图片文件的路径
+     * @return 图片信息流
+     * @throws Exception 访问剪切板可能出现异常，保存图片文件时可能出现异常
      */
     public BufferedImage getBufferedImageFromClipboard(String tmpLocation) throws Exception {
 
